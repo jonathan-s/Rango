@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 
+from datetime import datetime
 
 
 
@@ -160,7 +161,32 @@ def index(request):
     for category in category_list:
         category.url = category.name.replace(' ', '_')
 
+    if request.session.get('last_visit'):
+        last_visit = request.session.get('last_visit')
+        visits = request.session.get('visits', 0)
+        print last_visit
+        last_visit_time = datetime.strptime(last_visit[:-7], "%Y-%m-%d %H:%M:%S")
+
+        if (datetime.now() - last_visit_time).days > 0:
+            request.session['visits'] = visits + 1
+            request.session['last_visit'] = str(datetime.now())
+    else:
+        request.session['last_visit'] = str(datetime.now())
+        request.session['visits'] = 1
+
+    return render_to_response('rango/index.html', context_dict, context)
+
+
+
     return render_to_response('rango/index.html', context_dict, context)
 
 def about(request):
-    return HttpResponse("Rango says: Here is the about page.")
+    context = RequestContext(request)
+
+    visits = request.session.get('visits', 0)
+
+    return render_to_response('rango/about.html', {'visits': visits}, context)
+
+
+
+
