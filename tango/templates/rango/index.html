@@ -1,12 +1,7 @@
-<!DOCTYPE html>
+{% extends 'rango/base.html' %}
 
 {% load static %} <!-- new line -->
-
-<html>
-    <head>
-        <title>Rango</title>
-    </head>
-    <body>
+{% block body_block %}
         {% if user.is_authenticated %}
         <h1>Rango says... hello {{ user.username }}</h1>
         {% else %}
@@ -30,12 +25,6 @@
         {% for page in pages %}
             <li><a href="{{ page.url }}">{{ page.title }}</a> </li>
         {% endfor %}
-        </ul>
-        <a href="/rango/add_category/">Add new category</a><br>
-        <a href="/rango/register/">Register here</a><br>
-        <a href="/rango/login/">Login</a><br>
-
-        <a href="/rango/about/">About</a><br>
+        <br>
         <img src="{% static "jonathan.jpg" %}" alt="picture of me"> 
-    </body>
-</html>
+{% endblock %}
