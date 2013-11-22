@@ -1,13 +1,57 @@
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
 
 from rango.models import Category, Page
-from rango.forms import CategoryForm, PageForm
+from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
+
+
+
+
 
 def decode_url(url):
     name = url.replace('_', ' ')
     return name
+
+
+
+# //////////////// Form Views /////////////////
+
+def register(request):
+    context = RequestContext(request)
+
+    registered = False
+
+    # Post request
+    if request.method == 'POST':
+        user_form = UserForm(data=request.POST)
+        profile_form = UserProfileForm(data=request.POST)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save() # does this really save form data to the database?
+
+            user.set_password(user.password)
+            user.save()
+
+            profile = profile_form.save(commit=False)
+            profile.user = user
+
+            if 'picture' in request.FILES:
+                profile.picture = request.FILES['picture']
+
+            profile.save() 
+            registered = True
+        else:
+            print user_form.errors, profile_form.errors
+    # not a HTTP POST
+    else:
+        user_form = UserForm()
+        profile_form = UserProfileForm()
+
+    # render template 
+    return render_to_response('rango/register.html', {'user_form': user_form, 'profile_form': profile_form, 'registered': registered}, context)
 
 def add_page(request, category_name_url):
     context = RequestContext(request)
@@ -52,6 +96,37 @@ def add_category(request):
         # if request was a GET, display form to enter details. 
         form = CategoryForm()
     return render_to_response('rango/add_category.html', {'form': form }, context)
+
+
+
+
+# //////////////// Regular Views //////////////
+
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/rango/')
+
+def user_login(request):
+    context = RequestContext(request)
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+
+        if user: # don't need if user is not None 
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect('/rango/')
+            else:
+                return HttpResponse("Your Rango account is disabled")
+        else:
+            print "Invalid login details {0}, {1}".format(username, password)
+            return HttpResponse("Invalid Login details supplied")
+    else: 
+        return render_to_response("rango/login.html", {}, context)
+
 
 def category(request, category_name_url):
     context = RequestContext(request)
