@@ -2,29 +2,34 @@
 
 {% load static %} <!-- new line -->
 {% block body_block %}
-        {% if user.is_authenticated %}
-        <h1>Rango says... hello {{ user.username }}</h1>
-        {% else %}
-        <h1>Rango says...</h1>
-        hello world <strong>{{ boldmessage }}</strong><br>
-        {% endif %}
-
-        {% if categories %}
+    <div class="hero-unit">
+        <h1>Ready to Rango</h1>
+        <p>Find, Add, Share and Rango useful links and resources.</p>
+    </div>
+    <div class="row-fluid">
+        <div class="span6">
+            <h2>Top Five Categories</h2>
+            {% if categories %}
             <ul>
                 {% for category in categories %}
                 <li><a href="/rango/category/{{ category.url }}">{{ category.name }}</a></li>
                 {% endfor %}
             </ul>
-        {% else %}
-            <strong>No categories at present.</strong>
-        {% endif %}
-
-        <br>
-
-        <ul>
-        {% for page in pages %}
-            <li><a href="{{ page.url }}">{{ page.title }}</a> </li>
-        {% endfor %}
-        <br>
-        <img src="{% static "jonathan.jpg" %}" alt="picture of me"> 
+            {% else %}
+                <strong>No categories at present.</strong>
+            {% endif %}
+        </div><!-- column 1 span -->
+        <div class="span6">
+            <h2>Top Five Pages</h2>
+            {% if pages %}
+            <ul>
+                {% for page in pages %}
+                <li><a href="{{ page.url }}">{{ page.title }}</a> </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No pages present at the moment</p>
+            {% endif %}
+        </div><!-- column 2 -->
+    </div> <!-- row fluid --> 
 {% endblock %}

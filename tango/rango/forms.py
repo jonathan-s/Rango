@@ -4,7 +4,9 @@ from rango.models import Page, Category, UserProfile
 from django.contrib.auth.models import User
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput())
+    username = forms.CharField(help_text="Please enter a username.")
+    email = forms.CharField(help_text='Please enter your email')
+    password = forms.CharField(widget=forms.PasswordInput(), help_text="Please enter your password")
 
     class Meta:
         model = User
@@ -12,6 +14,9 @@ class UserForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
+    website = forms.URLField(help_text='Please enter your website.', required=False)
+    picture = forms.ImageField(help_text='Selct a profile image to upload', required=False)
+
     class Meta:
         model = UserProfile
         fields = ('website', 'picture')
