@@ -9,6 +9,7 @@ from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 
 from datetime import datetime
 
+from rango.bing_search import run_query
 
 
 
@@ -103,31 +104,12 @@ def add_category(request):
 
 # //////////////// Regular Views //////////////
 
-def user_logout(request):
-    logout(request)
-    return HttpResponseRedirect('/rango/')
-
-def user_login(request):
+def about(request):
     context = RequestContext(request)
 
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+    visits = request.session.get('visits', 0)
 
-        user = authenticate(username=username, password=password)
-
-        if user: # don't need if user is not None 
-            if user.is_active:
-                login(request, user)
-                return HttpResponseRedirect('/rango/')
-            else:
-                return HttpResponse("Your Rango account is disabled")
-        else:
-            print "Invalid login details {0}, {1}".format(username, password)
-            return HttpResponse("Invalid Login details supplied")
-    else: 
-        return render_to_response("rango/login.html", {}, context)
-
+    return render_to_response('rango/about.html', {'visits': visits}, context)
 
 def category(request, category_name_url):
     context = RequestContext(request)
@@ -145,7 +127,6 @@ def category(request, category_name_url):
     except Category.DoesNotExist:
         pass
     return render_to_response('rango/category.html', context_dict, context)
-
 
 def index(request):
     # Request the cotext of the request.
@@ -176,16 +157,45 @@ def index(request):
 
     return render_to_response('rango/index.html', context_dict, context)
 
+def search(request):
+    context = RequestContext(request)
+    result_list = []
 
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
 
-    return render_to_response('rango/index.html', context_dict, context)
+        if query:
+            result_list = run_query(query)
 
-def about(request):
+    return render_to_response('rango/search.html', {'result_list': result_list}, context)
+
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/rango/')
+
+def user_login(request):
     context = RequestContext(request)
 
-    visits = request.session.get('visits', 0)
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
 
-    return render_to_response('rango/about.html', {'visits': visits}, context)
+        user = authenticate(username=username, password=password)
+
+        if user: # don't need if user is not None 
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect('/rango/')
+            else:
+                return HttpResponse("Your Rango account is disabled")
+        else:
+            print "Invalid login details {0}, {1}".format(username, password)
+            return HttpResponse("Invalid Login details supplied")
+    else: 
+        return render_to_response("rango/login.html", {}, context)
+
+
+
 
 
 
