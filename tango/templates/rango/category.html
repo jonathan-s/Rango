@@ -11,7 +11,7 @@
             {% if pages %}
             <ul>
                 {% for page in pages %}
-                <li><a href="{{ page.url }}">{{ page.title }}</a> </li>
+                <li><a href="/rango/goto/?page_id={{ page.pk }}">{{ page.title }}</a> - <em>({{ page.views }} views)</em> </li>
                 {% endfor %}
             </ul>
             {% else %}
@@ -23,4 +23,6 @@
         <a href="/rango/category/{{ category_name_url }}/add_page"><button class="btn btn-primary">Add a page</button></a>
     </div> <!-- container -->
 </div> <!-- hero unit -->
+
+{% include 'rango/search.html' %}
 {% endblock %}
