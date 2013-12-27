@@ -3,7 +3,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 from rango.models import Category, Page, UserProfile
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
@@ -107,12 +107,43 @@ def about(request):
 
     return render_to_response('rango/about.html', {'visits': visits, 'cat_list': get_category_list()}, context)
 
+@login_required
+def category_like(request):
+    #context = RequestContext(request) # needed?
+    category_id = None
+
+    if request.method == 'GET':    
+        if 'category_id' in request.GET:
+            category_id = request.GET['category_id']
+
+    likes = 0
+    if category_id:
+        category = Category.objects.get(pk=category_id)
+        if category:
+            likes = category.likes + 1
+            category.likes = likes
+            category.save()
+    return HttpResponse(likes)
+
+def category_suggest(request):
+    context = RequestContext(request)
+    cat_list = []
+    starts_with = ''
+    if request.method == 'GET':
+        starts_with = request.GET['suggestion']
+    else:
+        starts_with = request.POST['suggestion'] 
+    
+    cat_list = get_category_list(8, starts_with)
+
+    return render_to_response('rango/category_list.html', {'cat_list': cat_list}, context)
+
 def category(request, category_name_url):
     context = RequestContext(request)
 
     category_name = decode_url(category_name_url)
 
-    context_dict = {'category_name': category_name, 'category_name_url': category_name_url, 'cat_list': get_category_list()}
+    context_dict = {'category_name_url': category_name_url, 'cat_list': get_category_list()}
 
     try:
         category = Category.objects.get(name=category_name)

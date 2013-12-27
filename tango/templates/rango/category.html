@@ -6,7 +6,14 @@
     <h1>Show categories</h1>
     <br>
     <div class="container">
-        <h2>{{ category_name }}</h2>
+        <h2>{{ category.name }}</h2>
+        <div>
+            <b id="like_count">{{ category.likes }}</b> people likes this category
+            {% if user.is_authenticated %}
+                <button id="likes" data-catid="{{ category.id }}" class="btn btn-mini btn-primary" type="button">Like</button>
+            {% endif %}
+        </div>
+        <br>
         {% if category %}
             {% if pages %}
             <ul>

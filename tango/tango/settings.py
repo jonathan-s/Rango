@@ -127,6 +127,7 @@ TEMPLATE_DIRS = (
 THIRD_PARTY = (
     'unipath',
     'south',
+    'PIL'
     )
 
 CUSTOM_APPS = (
