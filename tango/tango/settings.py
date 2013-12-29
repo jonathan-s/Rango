@@ -1,5 +1,6 @@
 # Django settings for tango project.
 from unipath import Path
+import dj_database_url
 
 PROJECT_PATH = Path.cwd()
 TEMPLATE_PATH = Path(PROJECT_PATH, 'templates')
@@ -16,17 +17,10 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'rango',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': 'jonathan',
-        'PASSWORD': '',
-        'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '5432',                      # Set to empty string for default.
-    }
+DATABASES = {'default': 
+dj_database_url.config(default="postgres://jonathan@localhost:5432/rango")
 }
+
 
 LOGIN_URL = '/rango/login/'
 
@@ -70,7 +64,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = 'staticfiles'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -127,7 +121,8 @@ TEMPLATE_DIRS = (
 THIRD_PARTY = (
     'unipath',
     'south',
-    'PIL'
+    'PIL',
+    'psycopg2'
     )
 
 CUSTOM_APPS = (
