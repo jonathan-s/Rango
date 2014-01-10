@@ -122,7 +122,8 @@ THIRD_PARTY = (
     'unipath',
     'south',
     'PIL',
-    'psycopg2'
+    'psycopg2',
+    'dj_static',
     )
 
 CUSTOM_APPS = (

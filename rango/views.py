@@ -49,7 +49,8 @@ def register(request):
         profile_form = UserProfileForm()
 
     # render template 
-    return render_to_response('rango/register.html', {'user_form': user_form, 'profile_form': profile_form, 'registered': registered, 'cat_list': get_category_list()}, context)
+    return render_to_response('rango/register.html', {'user_form': user_form, 
+        'profile_form': profile_form, 'registered': registered, 'cat_list': get_category_list()}, context)
 
 def add_page(request, category_name_url):
     context = RequestContext(request)
@@ -75,7 +76,8 @@ def add_page(request, category_name_url):
     else:
         form = PageForm()
 
-    return render_to_response('rango/add_page.html', {'category_name_url': category_name_url, 'category_name': category_name, 'form': form, 'cat_list': get_category_list() }, context)
+    return render_to_response('rango/add_page.html', {'category_name_url': category_name_url, 
+        'category_name': category_name, 'form': form, 'cat_list': get_category_list() }, context)
 
 
 
@@ -155,8 +157,9 @@ def category(request, category_name_url):
         # Will trigger the template to display the 'no category' message.
         pass
 
+    # This is a bug when redirected to Category? I think. 
     if request.method == 'POST':
-        query = request.POST['query'].strip()
+        query = request.POST.get('query', '').strip()
         if query:
             result_list = run_query(query)
             context_dict['result_list'] = result_list
